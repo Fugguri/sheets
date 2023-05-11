@@ -41,15 +41,17 @@ async def start(message: types.Message):
 
 @dp.message_handler(state=Add.add)
 async def start(message: types.Message):
-    data = message.text.split("\n")
-    Date = data[0].replace("1. Date:", "").strip()
-    Location = data[1].replace("2. Location:", "").strip()
-    Are = data[2].replace("3. Ha/Are:", "").strip()
-    Price = data[3].replace("4. Price:", "").strip()
-    Zone = data[4].replace("5. Zone:", "").strip()
-    Link = data[5].replace("6. Link:", "").strip()
+    try:
+        data = message.text.split("\n")
+        Date = data[0].replace("1. Date:", "").strip()
+        Location = data[1].replace("2. Location:", "").strip()
+        Are = data[2].replace("3. Ha/Are:", "").strip()
+        Price = data[3].replace("4. Price:", "").strip()
+        Zone = data[4].replace("5. Zone:", "").strip()
+        Link = data[5].replace("6. Link:", "").strip()
 
-    await message.answer(f"""<b>Succes!!!</b>\nPlease send message using this template.\n
+        await google_sheet_update(Date, Location, Are, Price, Zone, Link)
+        await message.answer(f"""<b>Succes!!!</b>\nPlease send message using this template.\n
 1. Date:{Date}
 2. Location:{Location}
 3. Ha/Are:{Are}
@@ -57,7 +59,8 @@ async def start(message: types.Message):
 5. Zone:{Zone}
 6. Link:{Link}
 """, reply_markup=kb)
-    await google_sheet_update(Date, Location, Are, Price, Zone, Link)
+    except:
+        await message.answer(f"""<b>Error</b>\nplease try again""", reply_markup=kb)
 
 
 @dp.callback_query_handler(lambda call: call.data == "add")
@@ -71,3 +74,28 @@ async def start(callback: types.CallbackQuery):
 5. Zone:
 6. Link:
 """,)
+
+
+@dp.message_handler()
+async def start(message: types.Message):
+    if "1. Date:" in message.text:
+        try:
+            data = message.text.split("\n")
+            Date = data[0].replace("1. Date:", "").strip()
+            Location = data[1].replace("2. Location:", "").strip()
+            Are = data[2].replace("3. Ha/Are:", "").strip()
+            Price = data[3].replace("4. Price:", "").strip()
+            Zone = data[4].replace("5. Zone:", "").strip()
+            Link = data[5].replace("6. Link:", "").strip()
+
+            await google_sheet_update(Date, Location, Are, Price, Zone, Link)
+            await message.answer(f"""<b>Succes!!!</b>\nPlease send message using this template.\n
+1. Date:{Date}
+2. Location:{Location}
+3. Ha/Are:{Are}
+4. Price:{Price}
+5. Zone:{Zone}
+6. Link:{Link}
+""", reply_markup=kb)
+        except:
+            await message.answer(f"""<b>Error</b>\nplease try again""", reply_markup=kb)
